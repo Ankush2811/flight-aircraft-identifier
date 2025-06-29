@@ -371,7 +371,10 @@
             stats: stats 
           });
         } catch (e) {
-          // Ignore message errors
+          // Ignore message errors (normal during extension reload)
+          if (e.message.includes('Extension context invalidated')) {
+            console.log('Extension context invalidated - this is normal during reload');
+          }
         }
       });
     });
@@ -459,18 +462,23 @@
       }
     });
     
-    // Listen for messages from popup
+    // Listen for messages from popup (with error handling)
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-      if (request.action === 'toggleExtension') {
-        extensionEnabled = request.enabled;
-        
-        if (extensionEnabled) {
-          startExtension();
-        } else {
-          stopExtension();
+      try {
+        if (request.action === 'toggleExtension') {
+          extensionEnabled = request.enabled;
+          
+          if (extensionEnabled) {
+            startExtension();
+          } else {
+            stopExtension();
+          }
+          
+          sendResponse({success: true});
         }
-        
-        sendResponse({success: true});
+      } catch (error) {
+        console.log('Extension context error (normal during reload):', error.message);
+        sendResponse({success: false, error: error.message});
       }
     });
     
