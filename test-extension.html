@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Identifier Test - Multiple Sites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .site-section {
+            background: white;
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .site-title {
+            color: #333;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Kayak-style flight cards */
+        .kayak [data-resultid] {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+        }
+        
+        .kayak .airline {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .kayak .flight-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Google Flights style */
+        .google-flights .gws-flights-results__collapsed-itinerary {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            background: #fafafa;
+        }
+        
+        .google-flights .gws-flights-results__itinerary-operator {
+            font-weight: 500;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+        
+        /* Expedia style */
+        .expedia .flight-module {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 18px;
+            margin: 15px 0;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .expedia .airline-name {
+            font-weight: bold;
+            color: #003580;
+            margin-bottom: 10px;
+        }
+        
+        /* Cleartrip style */
+        .cleartrip .flight-card {
+            border: 2px solid #ff6d2d;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            background: white;
+        }
+        
+        .cleartrip .airline-info {
+            font-weight: 600;
+            color: #ff6d2d;
+            margin-bottom: 8px;
+        }
+        
+        /* MakeMyTrip style */
+        .makemytrip .listingCard {
+            border: 1px solid #008cff;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 10px 0;
+            background: #f8fbff;
+        }
+        
+        .makemytrip .airline-name {
+            font-weight: bold;
+            color: #008cff;
+            font-size: 16px;
+        }
+        
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            border-radius: 4px;
+        }
+        
+        .test-controls {
+            margin: 20px 0;
+            padding: 15px;
+            background: #ffe7e7;
+            border-radius: 4px;
+        }
+        
+        .test-button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #0052a3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛩️ Aircraft Identifier Extension Test - Multi-Site</h1>
+    
+    <div class="status">
+        <strong>Test Status:</strong> 
+        <span id="testStatus">Loading extension...</span>
+    </div>
+    
+    <div class="test-controls">
+        <strong>Test Controls:</strong>
+        <button class="test-button" onclick="reloadExtension()">Reload Extension</button>
+        <button class="test-button" onclick="clearTags()">Clear Tags</button>
+        <button class="test-button" onclick="runManualScan()">Manual Scan</button>
+    </div>
+
+    <!-- Kayak Style -->
+    <div class="site-section kayak">
+        <h2 class="site-title">🎯 Kayak.com Style</h2>
+        
+        <div data-resultid="kayak-flight-1">
+            <div class="airline">American Airlines AA 1234</div>
+            <div class="flight-info">Boeing 737-800 • 2h 45m • Nonstop</div>
+            <div class="codeshares">Operated by American Airlines</div>
+        </div>
+        
+        <div data-resultid="kayak-flight-2">
+            <div class="airline">Lufthansa LH 441</div>
+            <div class="flight-info">Airbus A330-300 • 8h 20m • Nonstop</div>
+            <div class="segment-info">Frankfurt to New York</div>
+        </div>
+        
+        <div data-resultid="kayak-flight-3">
+            <div class="airline">Delta Air Lines DL 156</div>
+            <div class="flight-info">Airbus A321neo • 3h 15m • Nonstop</div>
+        </div>
+    </div>
+
+    <!-- Google Flights Style -->
+    <div class="site-section google-flights">
+        <h2 class="site-title">🌎 Google Flights Style</h2>
+        
+        <div class="gws-flights-results__collapsed-itinerary" data-testid="flight-option-1">
+            <div class="gws-flights-results__itinerary-operator">United Airlines</div>
+            <div class="flight-info">Boeing 777-200 • UA 932 • 5h 30m</div>
+            <div class="gws-flights-results__aircraft">Equipment: Boeing 777-200ER</div>
+        </div>
+        
+        <div class="gws-flights-results__collapsed-itinerary" data-testid="flight-option-2">
+            <div class="gws-flights-results__itinerary-operator">Emirates</div>
+            <div class="flight-info">Airbus A380-800 • EK 203 • 14h 15m</div>
+            <div class="aircraft-type">A380</div>
+        </div>
+    </div>
+
+    <!-- Expedia Style -->
+    <div class="site-section expedia">
+        <h2 class="site-title">🧳 Expedia.com Style</h2>
+        
+        <div class="flight-module">
+            <div class="airline-name">Southwest Airlines WN 1247</div>
+            <div class="flight-operator">Operated by Southwest Airlines</div>
+            <div class="segment-info">Boeing 737-700 • 2h 10m direct</div>
+            <div class="equipment">Aircraft: B737</div>
+        </div>
+        
+        <div class="flight-module">
+            <div class="airline-name">Air France AF 83</div>
+            <div class="segment-info">Airbus A350-900 • 7h 35m nonstop</div>
+            <div class="flight-aircraft">Equipment type: A350</div>
+        </div>
+    </div>
+
+    <!-- Cleartrip Style -->
+    <div class="site-section cleartrip">
+        <h2 class="site-title">🎫 Cleartrip.com Style</h2>
+        
+        <div class="flight-card">
+            <div class="airline-info">IndiGo 6E-234</div>
+            <div class="carrier-info">Aircraft: Airbus A320neo</div>
+            <div class="aircraft-details">A320 family aircraft</div>
+        </div>
+        
+        <div class="flight-card">
+            <div class="airline-info">Air India AI-131</div>
+            <div class="flight-operator">Boeing 787-8 Dreamliner</div>
+            <div class="aircraft-details">B787 wide-body</div>
+        </div>
+    </div>
+
+    <!-- MakeMyTrip Style -->
+    <div class="site-section makemytrip">
+        <h2 class="site-title">✈️ MakeMyTrip.com Style</h2>
+        
+        <div class="listingCard">
+            <div class="airline-name">Vistara UK-955</div>
+            <div class="operator-name">Operated by Vistara</div>
+            <div class="flight-info">Airbus A321neo • 2h 20m</div>
+            <div class="aircraft-type-info">Aircraft model: A321</div>
+        </div>
+        
+        <div class="listingCard">
+            <div class="airline-name">SpiceJet SG-8157</div>
+            <div class="flight-info">Boeing 737-800 • 1h 55m direct</div>
+            <div class="equipment-type">Equipment: B737</div>
+        </div>
+    </div>
+
+    <!-- Generic/Mixed Content -->
+    <div class="site-section">
+        <h2 class="site-title">🔍 Generic Flight Detection</h2>
+        
+        <div class="flight">
+            <p>Flight EK 203: Dubai to New York JFK</p>
+            <p>Aircraft: Airbus A380-800, Duration: 14h 30m</p>
+            <p>Departure: 08:30, Arrival: 15:45</p>
+        </div>
+        
+        <article>
+            <h3>Long-haul Route Analysis</h3>
+            <p>The route from London Heathrow to Singapore is typically served by wide-body aircraft. British Airways operates Boeing 777-300ER on this route, while Singapore Airlines uses their Airbus A350-900. The flight time is approximately 13 hours and 20 minutes.</p>
+        </article>
+    </div>
+
+    <div class="status">
+        <h3>🔍 Detection Summary</h3>
+        <p>The extension should detect and tag the following aircraft:</p>
+        <ul>
+            <li><strong>Boeing:</strong> 737-800, 777-200, 737-700, 787-8, 737-800, 777-300ER</li>
+            <li><strong>Airbus:</strong> A330-300, A321neo, A380-800, A350-900, A320neo, A321neo, A350-900</li>
+        </ul>
+        <p><strong>Expected tags:</strong> 8 Boeing, 7 Airbus = 15 total</p>
+        <p id="currentTags"><strong>Current tags:</strong> Scanning...</p>
+    </div>
+
+    <script>
+        let extensionReady = false;
+        
+        function updateStatus(message) {
+            document.getElementById('testStatus').textContent = message;
+            console.log('Status:', message);
+        }
+        
+        function updateTagCount() {
+            const tags = document.querySelectorAll('.aircraft-manufacturer-tag');
+            const boeingCount = document.querySelectorAll('.aircraft-manufacturer-tag.boeing').length;
+            const airbusCount = document.querySelectorAll('.aircraft-manufacturer-tag.airbus').length;
+            
+            document.getElementById('currentTags').innerHTML = 
+                `<strong>Current tags:</strong> ${tags.length} total (${boeingCount} Boeing, ${airbusCount} Airbus)`;
+        }
+        
+        function reloadExtension() {
+            clearTags();
+            updateStatus('Reloading extension...');
+            
+            // Remove and re-add the content script
+            const existingScript = document.getElementById('content-script');
+            if (existingScript) {
+                existingScript.remove();
+            }
+            
+            setTimeout(() => {
+                const script = document.createElement('script');
+                script.id = 'content-script';
+                script.src = 'content.js';
+                script.onload = () => {
+                    updateStatus('Extension reloaded! Scanning...');
+                    setTimeout(updateTagCount, 2000);
+                };
+                script.onerror = () => {
+                    updateStatus('Error loading extension script!');
+                };
+                document.head.appendChild(script);
+            }, 500);
+        }
+        
+        function clearTags() {
+            const tags = document.querySelectorAll('.aircraft-manufacturer-tag');
+            tags.forEach(tag => tag.remove());
+            
+            const processedCards = document.querySelectorAll('.flight-processed');
+            processedCards.forEach(card => card.classList.remove('flight-processed'));
+            
+            updateStatus('Tags cleared');
+            updateTagCount();
+        }
+        
+        function runManualScan() {
+            updateStatus('Running manual scan...');
+            // The content script should handle scanning automatically
+            setTimeout(updateTagCount, 2000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('Page loaded, initializing extension...');
+            
+            // Load the content script
+            const script = document.createElement('script');
+            script.id = 'content-script';
+            script.src = 'content.js';
+            script.onload = () => {
+                extensionReady = true;
+                updateStatus('Extension loaded! Scanning for aircraft...');
+                
+                // Check for tags periodically
+                const checkTags = setInterval(() => {
+                    updateTagCount();
+                    const tags = document.querySelectorAll('.aircraft-manufacturer-tag');
+                    if (tags.length > 0) {
+                        updateStatus(`Extension working! Found ${tags.length} aircraft.`);
+                        clearInterval(checkTags);
+                    }
+                }, 1000);
+                
+                // Stop checking after 10 seconds
+                setTimeout(() => {
+                    clearInterval(checkTags);
+                    const finalTags = document.querySelectorAll('.aircraft-manufacturer-tag');
+                    if (finalTags.length === 0) {
+                        updateStatus('No aircraft detected. Check console for errors.');
+                    }
+                }, 10000);
+            };
+            script.onerror = () => {
+                updateStatus('Failed to load extension script!');
+            };
+            document.head.appendChild(script);
+        });
+        
+        // Update tag count every 5 seconds
+        setInterval(updateTagCount, 5000);
+    </script>
+</body>
+</html> 

@@ -1,50 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "Aircraft Identifier - Boeing vs Airbus",
+  "name": "Aircraft Identifier",
   "version": "1.0.0",
-  "description": "Instantly identify Boeing and Airbus aircraft while booking flights. Never fly the wrong plane again!",
+  "description": "Identify Boeing and Airbus aircraft on flight booking sites",
   "permissions": [
-    "activeTab",
-    "storage"
+    "storage",
+    "activeTab"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
-      "matches": [
-        "*://*.google.com/*",
-        "*://*.expedia.com/*",
-        "*://*.booking.com/*",
-        "*://*.kayak.com/*",
-        "*://*.skyscanner.com/*",
-        "*://*.momondo.com/*",
-        "*://*.cleartrip.com/*",
-        "*://*.ixigo.com/*",
-        "*://*.makemytrip.com/*",
-        "*://*.goibibo.com/*",
-        "*://*.yatra.com/*",
-        "*://*.easemytrip.com/*",
-        "*://*.spicejet.com/*",
-        "*://*.airindia.in/*",
-        "*://*.indigo.in/*",
-        "*://*.goair.in/*",
-        "*://*.vistara.com/*",
-        "*://*.jetairways.com/*",
-        "*://*.emirates.com/*",
-        "*://*.etihad.com/*",
-        "*://*.qatarairways.com/*",
-        "*://*.singaporeair.com/*",
-        "*://*.cathaypacific.com/*",
-        "*://*.lufthansa.com/*",
-        "*://*.britishairways.com/*",
-        "*://*.airfrance.com/*",
-        "*://*.klm.com/*",
-        "*://*.delta.com/*",
-        "*://*.united.com/*",
-        "*://*.americanairlines.com/*"
-      ],
-      "js": [
-        "aircraft-data.js",
-        "content.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["aircraft-data.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_end"
     }
