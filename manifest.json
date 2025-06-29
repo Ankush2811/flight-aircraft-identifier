@@ -1,0 +1,72 @@
+{
+  "manifest_version": 3,
+  "name": "Aircraft Identifier - Boeing vs Airbus",
+  "version": "1.0.0",
+  "description": "Instantly identify Boeing and Airbus aircraft while booking flights. Never fly the wrong plane again!",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.google.com/*",
+        "*://*.expedia.com/*",
+        "*://*.booking.com/*",
+        "*://*.kayak.com/*",
+        "*://*.skyscanner.com/*",
+        "*://*.momondo.com/*",
+        "*://*.cleartrip.com/*",
+        "*://*.ixigo.com/*",
+        "*://*.makemytrip.com/*",
+        "*://*.goibibo.com/*",
+        "*://*.yatra.com/*",
+        "*://*.easemytrip.com/*",
+        "*://*.spicejet.com/*",
+        "*://*.airindia.in/*",
+        "*://*.indigo.in/*",
+        "*://*.goair.in/*",
+        "*://*.vistara.com/*",
+        "*://*.jetairways.com/*",
+        "*://*.emirates.com/*",
+        "*://*.etihad.com/*",
+        "*://*.qatarairways.com/*",
+        "*://*.singaporeair.com/*",
+        "*://*.cathaypacific.com/*",
+        "*://*.lufthansa.com/*",
+        "*://*.britishairways.com/*",
+        "*://*.airfrance.com/*",
+        "*://*.klm.com/*",
+        "*://*.delta.com/*",
+        "*://*.united.com/*",
+        "*://*.americanairlines.com/*"
+      ],
+      "js": [
+        "aircraft-data.js",
+        "content.js"
+      ],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Aircraft Identifier",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["aircraft-data.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 

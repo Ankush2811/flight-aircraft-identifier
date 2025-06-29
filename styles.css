@@ -1,0 +1,150 @@
+/* Know Your Plane Styles */
+
+.aircraft-manufacturer-tag {
+  display: inline-block !important;
+  padding: 3px 10px !important;
+  margin: 0 5px !important;
+  border-radius: 15px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: white !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25) !important;
+  z-index: 10000 !important;
+  position: relative !important;
+  transition: all 0.2s ease !important;
+  cursor: default !important;
+  white-space: nowrap !important;
+}
+
+.aircraft-manufacturer-tag:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.35) !important;
+}
+
+.aircraft-manufacturer-tag.boeing {
+  background: linear-gradient(135deg, #0066CC, #004499) !important;
+  border: 1px solid #0052A3 !important;
+}
+
+.aircraft-manufacturer-tag.airbus {
+  background: linear-gradient(135deg, #FF6B35, #E55527) !important;
+  border: 1px solid #CC4A1F !important;
+}
+
+.aircraft-manufacturer-tag.other {
+  background: linear-gradient(135deg, #666666, #555555) !important;
+  border: 1px solid #444444 !important;
+}
+
+/* Airline-based identification styling */
+.aircraft-manufacturer-tag.airline-based {
+  border-style: dashed !important;
+  font-size: 9px !important;
+  padding: 2px 7px !important;
+}
+
+.aircraft-manufacturer-tag.airline-based::after {
+  content: "*" !important;
+  font-size: 8px !important;
+  vertical-align: super !important;
+  margin-left: 1px !important;
+}
+
+.aircraft-info-enhanced {
+  position: relative !important;
+}
+
+.aircraft-highlight {
+  background-color: rgba(255, 235, 59, 0.2) !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.aircraft-highlight:hover {
+  background-color: rgba(255, 235, 59, 0.4) !important;
+}
+
+/* Animation for new tags */
+@keyframes aircraftTagAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.aircraft-manufacturer-tag {
+  animation: aircraftTagAppear 0.3s ease-out !important;
+}
+
+/* Special styling for different booking sites */
+
+/* Google Flights */
+.flt-subtext .aircraft-manufacturer-tag {
+  margin-left: 8px !important;
+}
+
+/* Expedia */
+.flight-module .aircraft-manufacturer-tag {
+  margin-top: 2px !important;
+  vertical-align: top !important;
+}
+
+/* Kayak */
+.resultWrapper .aircraft-manufacturer-tag {
+  margin-left: 5px !important;
+}
+
+/* Indian booking sites */
+/* Cleartrip */
+.flight-info-wrap .aircraft-manufacturer-tag {
+  margin-left: 8px !important;
+  vertical-align: middle !important;
+}
+
+/* Ixigo */
+.flight-card .aircraft-manufacturer-tag {
+  margin-left: 6px !important;
+  margin-top: 3px !important;
+}
+
+/* MakeMyTrip */
+.flight-details-section .aircraft-manufacturer-tag {
+  margin-left: 10px !important;
+  vertical-align: text-top !important;
+}
+
+/* Goibibo */
+.flight-item .aircraft-manufacturer-tag {
+  margin-left: 5px !important;
+  display: inline-block !important;
+}
+
+/* Yatra */
+.flight-result-item .aircraft-manufacturer-tag {
+  margin-left: 7px !important;
+  margin-right: 3px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .aircraft-manufacturer-tag {
+    font-size: 9px !important;
+    padding: 2px 8px !important;
+    margin: 0 3px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .aircraft-manufacturer-tag {
+    font-size: 8px !important;
+    padding: 1px 6px !important;
+    margin: 0 2px !important;
+  }
+} 

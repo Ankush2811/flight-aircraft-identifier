@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 350px;
+            min-height: 400px;
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .boeing { color: #0066CC; }
+        .airbus { color: #FF6B35; }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        .status.active {
+            background: rgba(76, 175, 80, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✈️ Aircraft Identifier</h1>
+        <p>Boeing vs Airbus Detection</p>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number boeing" id="boeingCount">0</div>
+            <div class="stat-label">Boeing Aircraft</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number airbus" id="airbusCount">0</div>
+            <div class="stat-label">Airbus Aircraft</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label class="control-label">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enableExtension" checked>
+                    <span class="slider"></span>
+                </label>
+                Enable Extension
+            </label>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="showAirlineMode" checked>
+                    <span class="slider"></span>
+                </label>
+                Airline-Based Detection
+            </label>
+        </div>
+    </div>
+    
+    <div class="status active" id="status">
+        ✅ Extension Active
+    </div>
+    
+    <div class="footer">
+        Scan complete • Last updated: <span id="lastUpdate">Now</span>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html> 

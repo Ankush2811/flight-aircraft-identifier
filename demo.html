@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Identifier - Complete Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            background: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .demo-section {
+            display: none;
+        }
+
+        .demo-section.active {
+            display: block;
+        }
+
+        .site-demo {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .site-header {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .site-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .google { background: #4285f4; }
+        .expedia { background: #ffd700; color: #000; }
+        .kayak { background: #ff6b35; }
+        .united { background: #0f3875; }
+        .delta { background: #003366; }
+        
+        .site-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        
+        .before, .after {
+            padding: 30px;
+        }
+        
+        .before {
+            border-right: 2px solid #e9ecef;
+        }
+        
+        .comparison-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        
+        .before .comparison-title {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .after .comparison-title {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        /* Site-specific styling */
+        .google-flight {
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .flight-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .airline-name {
+            font-weight: 500;
+            color: #202124;
+        }
+        
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+        
+        .flight-details {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 8px;
+        }
+        
+        .aircraft-line {
+            font-size: 12px;
+            color: #5f6368;
+            padding: 4px 0;
+        }
+        
+        /* Extension tags */
+        .aircraft-manufacturer-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            margin: 0 5px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .boeing {
+            background: linear-gradient(135deg, #0066CC, #004499);
+            border: 1px solid #0052A3;
+        }
+        
+        .airbus {
+            background: linear-gradient(135deg, #FF6B35, #E55527);
+            border: 1px solid #CC4A1F;
+        }
+        
+        .aircraft-highlight {
+            background-color: rgba(255, 235, 59, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .flight-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .demo-note {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .enhancement-highlight {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .section-header {
+            padding: 25px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        /* Expedia specific */
+        .expedia-card {
+            border: 1px solid #e4e7ea;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .expedia-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .expedia-airline {
+            font-weight: bold;
+            color: #25479b;
+        }
+        
+        .expedia-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #c32361;
+        }
+        
+        /* Kayak specific */
+        .kayak-result {
+            background: white;
+            border: 1px solid #d3d3d3;
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .kayak-airline {
+            font-weight: bold;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .kayak-aircraft {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .before {
+                border-right: none;
+                border-bottom: 2px solid #e9ecef;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✈️ Aircraft Identifier - Complete Demo</h1>
+            <p>See how the Chrome extension identifies Boeing vs Airbus aircraft across different booking sites</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('international')">International Sites</button>
+            <button class="nav-tab" onclick="showSection('basic')">Basic Demo</button>
+            <button class="nav-tab" onclick="showSection('indian')">Indian Sites</button>
+            <button class="nav-tab" onclick="showSection('enhanced')">Enhanced Detection</button>
+        </div>
+
+        <!-- International Sites Section -->
+        <div id="international" class="demo-section active">
+
+        <!-- Google Flights Demo -->
+        <div class="site-demo">
+            <div class="site-header">
+                <div class="site-logo google">G</div>
+                <div class="site-name">Google Flights</div>
+            </div>
+            <div class="comparison">
+                <div class="before">
+                    <div class="comparison-title">❌ Before Extension</div>
+                    <div class="google-flight">
+                        <div class="flight-info">
+                            <div class="airline-name">United • UA 123</div>
+                            <div class="price">$299</div>
+                        </div>
+                        <div class="flight-details">6:00 AM – 9:15 AM</div>
+                        <div class="aircraft-line">Boeing 737-800</div>
+                    </div>
+                    <div class="google-flight">
+                        <div class="flight-info">
+                            <div class="airline-name">Delta • DL 456</div>
+                            <div class="price">$315</div>
+                        </div>
+                        <div class="flight-details">10:30 AM – 1:45 PM</div>
+                        <div class="aircraft-line">Airbus A320</div>
+                    </div>
+                </div>
+                <div class="after">
+                    <div class="comparison-title">✅ With Extension Active</div>
+                    <div class="google-flight">
+                        <div class="flight-info">
+                            <div class="airline-name">United • UA 123</div>
+                            <div class="price">$299</div>
+                        </div>
+                        <div class="flight-details">6:00 AM – 9:15 AM</div>
+                        <div class="aircraft-line">
+                            <span class="aircraft-highlight">Boeing 737-800</span>
+                            <span class="aircraft-manufacturer-tag boeing">Boeing</span>
+                        </div>
+                    </div>
+                    <div class="google-flight">
+                        <div class="flight-info">
+                            <div class="airline-name">Delta • DL 456</div>
+                            <div class="price">$315</div>
+                        </div>
+                        <div class="flight-details">10:30 AM – 1:45 PM</div>
+                        <div class="aircraft-line">
+                            <span class="aircraft-highlight">Airbus A320</span>
+                            <span class="aircraft-manufacturer-tag airbus">Airbus</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expedia Demo -->
+        <div class="site-demo">
+            <div class="site-header">
+                <div class="site-logo expedia">E</div>
+                <div class="site-name">Expedia</div>
+            </div>
+            <div class="comparison">
+                <div class="before">
+                    <div class="comparison-title">❌ Before Extension</div>
+                    <div class="expedia-card">
+                        <div class="expedia-header">
+                            <div class="expedia-airline">American Airlines</div>
+                            <div class="expedia-price">$342</div>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                            7:45 AM - 11:20 AM (3h 35m)
+                        </div>
+                        <div style="font-size: 12px; color: #999;">
+                            Aircraft: Boeing 777-300ER
+                        </div>
+                    </div>
+                    <div class="expedia-card">
+                        <div class="expedia-header">
+                            <div class="expedia-airline">Virgin Atlantic</div>
+                            <div class="expedia-price">$389</div>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                            2:15 PM - 5:50 PM (3h 35m)
+                        </div>
+                        <div style="font-size: 12px; color: #999;">
+                            Equipment: A350-900
+                        </div>
+                    </div>
+                </div>
+                <div class="after">
+                    <div class="comparison-title">✅ With Extension Active</div>
+                    <div class="expedia-card">
+                        <div class="expedia-header">
+                            <div class="expedia-airline">American Airlines</div>
+                            <div class="expedia-price">$342</div>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                            7:45 AM - 11:20 AM (3h 35m)
+                        </div>
+                        <div style="font-size: 12px; color: #999;">
+                            Aircraft: <span class="aircraft-highlight">Boeing 777-300ER</span>
+                            <span class="aircraft-manufacturer-tag boeing">Boeing</span>
+                        </div>
+                    </div>
+                    <div class="expedia-card">
+                        <div class="expedia-header">
+                            <div class="expedia-airline">Virgin Atlantic</div>
+                            <div class="expedia-price">$389</div>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                            2:15 PM - 5:50 PM (3h 35m)
+                        </div>
+                        <div style="font-size: 12px; color: #999;">
+                            Equipment: <span class="aircraft-highlight">A350-900</span>
+                            <span class="aircraft-manufacturer-tag airbus">Airbus</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kayak Demo -->
+        <div class="site-demo">
+            <div class="site-header">
+                <div class="site-logo kayak">K</div>
+                <div class="site-name">Kayak</div>
+            </div>
+            <div class="comparison">
+                <div class="before">
+                    <div class="comparison-title">❌ Before Extension</div>
+                    <div class="kayak-result">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div class="kayak-airline">Southwest Airlines</div>
+                            <div style="font-weight: bold; color: #00a650;">$278</div>
+                        </div>
+                        <div style="font-size: 13px; color: #666; margin-bottom: 5px;">
+                            9:20 AM - 12:35 PM
+                        </div>
+                        <div class="kayak-aircraft">Boeing 737 MAX 8</div>
+                    </div>
+                    <div class="kayak-result">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div class="kayak-airline">JetBlue Airways</div>
+                            <div style="font-weight: bold; color: #00a650;">$295</div>
+                        </div>
+                        <div style="font-size: 13px; color: #666; margin-bottom: 5px;">
+                            1:45 PM - 5:00 PM
+                        </div>
+                        <div class="kayak-aircraft">Airbus A321neo</div>
+                    </div>
+                </div>
+                <div class="after">
+                    <div class="comparison-title">✅ With Extension Active</div>
+                    <div class="kayak-result">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div class="kayak-airline">Southwest Airlines</div>
+                            <div style="font-weight: bold; color: #00a650;">$278</div>
+                        </div>
+                        <div style="font-size: 13px; color: #666; margin-bottom: 5px;">
+                            9:20 AM - 12:35 PM
+                        </div>
+                        <div class="kayak-aircraft">
+                            <span class="aircraft-highlight">Boeing 737 MAX 8</span>
+                            <span class="aircraft-manufacturer-tag boeing">Boeing</span>
+                        </div>
+                    </div>
+                    <div class="kayak-result">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div class="kayak-airline">JetBlue Airways</div>
+                            <div style="font-weight: bold; color: #00a650;">$295</div>
+                        </div>
+                        <div style="font-size: 13px; color: #666; margin-bottom: 5px;">
+                            1:45 PM - 5:00 PM
+                        </div>
+                        <div class="kayak-aircraft">
+                            <span class="aircraft-highlight">Airbus A321neo</span>
+                            <span class="aircraft-manufacturer-tag airbus">Airbus</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- United Airlines Demo -->
+        <div class="site-demo">
+            <div class="site-header">
+                <div class="site-logo united">UA</div>
+                <div class="site-name">United Airlines</div>
+            </div>
+            <div class="comparison">
+                <div class="before">
+                    <div class="comparison-title">❌ Before Extension</div>
+                    <div style="background: white; border: 1px solid #ccc; padding: 20px; border-radius: 6px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                            <div style="font-weight: bold; color: #0f3875;">Flight UA 2847</div>
+                            <div style="font-weight: bold; color: #0f3875; font-size: 18px;">$356</div>
+                        </div>
+                        <div style="margin-bottom: 10px; color: #666;">
+                            11:15 AM → 2:30 PM (5h 15m, 1 stop)
+                        </div>
+                        <div style="font-size: 12px; color: #999; background: #f5f5f5; padding: 8px; border-radius: 4px;">
+                            Aircraft Type: Boeing 787-9 Dreamliner
+                        </div>
+                    </div>
+                </div>
+                <div class="after">
+                    <div class="comparison-title">✅ With Extension Active</div>
+                    <div style="background: white; border: 1px solid #ccc; padding: 20px; border-radius: 6px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                            <div style="font-weight: bold; color: #0f3875;">Flight UA 2847</div>
+                            <div style="font-weight: bold; color: #0f3875; font-size: 18px;">$356</div>
+                        </div>
+                        <div style="margin-bottom: 10px; color: #666;">
+                            11:15 AM → 2:30 PM (5h 15m, 1 stop)
+                        </div>
+                        <div style="font-size: 12px; color: #999; background: #f5f5f5; padding: 8px; border-radius: 4px;">
+                            Aircraft Type: <span class="aircraft-highlight">Boeing 787-9 Dreamliner</span>
+                            <span class="aircraft-manufacturer-tag boeing">Boeing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delta Airlines Demo -->
+        <div class="site-demo">
+            <div class="site-header">
+                <div class="site-logo delta">Δ</div>
+                <div class="site-name">Delta Air Lines</div>
+            </div>
+            <div class="comparison">
+                <div class="before">
+                    <div class="comparison-title">❌ Before Extension</div>
+                    <div style="background: white; border: 1px solid #d1d5db; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 15px;">
+                            <div style="font-weight: 600; color: #003366;">Delta Flight 1234</div>
+                            <div style="margin-left: auto; font-weight: bold; color: #d21f3c; font-size: 20px;">$412</div>
+                        </div>
+                        <div style="color: #666; margin-bottom: 12px; font-size: 14px;">
+                            5:40 PM - 9:05 PM • Nonstop • 3h 25m
+                        </div>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; font-size: 13px; color: #666;">
+                            <div>✈️ Airbus A330-300</div>
+                            <div>🎵 Delta Studio • 🍽️ Meal service • 📶 Wi-Fi</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="after">
+                    <div class="comparison-title">✅ With Extension Active</div>
+                    <div style="background: white; border: 1px solid #d1d5db; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 15px;">
+                            <div style="font-weight: 600; color: #003366;">Delta Flight 1234</div>
+                            <div style="margin-left: auto; font-weight: bold; color: #d21f3c; font-size: 20px;">$412</div>
+                        </div>
+                        <div style="color: #666; margin-bottom: 12px; font-size: 14px;">
+                            5:40 PM - 9:05 PM • Nonstop • 3h 25m
+                        </div>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; font-size: 13px; color: #666;">
+                            <div>✈️ <span class="aircraft-highlight">Airbus A330-300</span>
+                            <span class="aircraft-manufacturer-tag airbus">Airbus</span></div>
+                            <div>🎵 Delta Studio • 🍽️ Meal service • 📶 Wi-Fi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0; padding: 30px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <h2 style="color: #333; margin-bottom: 15px;">🎯 Key Visual Benefits</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h3 style="color: #0066CC; margin-bottom: 10px;">🔵 Boeing Aircraft</h3>
+                    <p style="color: #666; font-size: 14px;">Blue tags instantly identify Boeing aircraft (737, 777, 787, etc.)</p>
+                </div>
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h3 style="color: #FF6B35; margin-bottom: 10px;">🟠 Airbus Aircraft</h3>
+                    <p style="color: #666; font-size: 14px;">Orange tags clearly mark Airbus planes (A320, A350, A380, etc.)</p>
+                </div>
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h3 style="color: #333; margin-bottom: 10px;">⚡ Instant Recognition</h3>
+                    <p style="color: #666; font-size: 14px;">No more guessing - know the manufacturer at a glance</p>
+                </div>
+            </div>
+        </div>
+
+        </div> <!-- End International Section -->
+
+        <!-- Basic Demo Section -->
+        <div id="basic" class="demo-section">
+            <div class="section-header">
+                <h2>🛩️ Basic Functionality Demo</h2>
+                <p>Test the extension with various aircraft types and formats</p>
+            </div>
+            
+            <div class="demo-note">
+                <strong>📋 Demo Instructions:</strong> Install the Aircraft Identifier Chrome extension, then refresh this page. Look for colored tags next to aircraft information - Blue for Boeing, Orange for Airbus.
+            </div>
+
+            <div style="padding: 30px;">
+                <!-- Boeing 737 -->
+                <div class="flight-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <div style="font-weight: bold; font-size: 18px;">United Airlines - UA 1234</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #2e7d32;">$299</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">8:00 AM</div>
+                            <div style="color: #666;">LAX - Los Angeles</div>
+                        </div>
+                        <div style="text-align: center; color: #666;">
+                            <div>3h 45m</div>
+                            <div>Nonstop</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">11:45 AM</div>
+                            <div style="color: #666;">SFO - San Francisco</div>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px; color: #666;">
+                        Aircraft: Boeing 737-800 • Seats: 160 • WiFi Available
+                    </div>
+                </div>
+
+                <!-- Airbus A320 -->
+                <div class="flight-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <div style="font-weight: bold; font-size: 18px;">Delta Air Lines - DL 5678</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #2e7d32;">$315</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">10:30 AM</div>
+                            <div style="color: #666;">LAX - Los Angeles</div>
+                        </div>
+                        <div style="text-align: center; color: #666;">
+                            <div>3h 50m</div>
+                            <div>Nonstop</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">2:20 PM</div>
+                            <div style="color: #666;">SFO - San Francisco</div>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px; color: #666;">
+                        Equipment: Airbus A320neo • Capacity: 146 passengers • In-flight entertainment
+                    </div>
+                </div>
+
+                <!-- Boeing 787 -->
+                <div class="flight-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <div style="font-weight: bold; font-size: 18px;">American Airlines - AA 9012</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #2e7d32;">$335</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">2:15 PM</div>
+                            <div style="color: #666;">LAX - Los Angeles</div>
+                        </div>
+                        <div style="text-align: center; color: #666;">
+                            <div>3h 40m</div>
+                            <div>Nonstop</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">5:55 PM</div>
+                            <div style="color: #666;">SFO - San Francisco</div>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px; color: #666;">
+                        Plane: B787-9 Dreamliner • Premium cabin • Advanced air filtration
+                    </div>
+                </div>
+
+                <!-- Airbus A350 -->
+                <div class="flight-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <div style="font-weight: bold; font-size: 18px;">Virgin America - VX 3456</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #2e7d32;">$289</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">4:45 PM</div>
+                            <div style="color: #666;">LAX - Los Angeles</div>
+                        </div>
+                        <div style="text-align: center; color: #666;">
+                            <div>3h 35m</div>
+                            <div>Nonstop</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">8:20 PM</div>
+                            <div style="color: #666;">SFO - San Francisco</div>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px; color: #666;">
+                        Aircraft type: A350-900 • Mood lighting • Quiet cabin technology
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indian Sites Section -->
+        <div id="indian" class="demo-section">
+            <div class="section-header">
+                <h2>🇮🇳 Indian Booking Sites</h2>
+                <p>Airline-based detection for Cleartrip, Ixigo, MakeMyTrip when aircraft info isn't shown</p>
+            </div>
+
+            <div style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">Cleartrip Example</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="background: #fff3cd; color: #856404; padding: 10px 15px; border-radius: 8px;">❌ Before Extension</h4>
+                        <div class="flight-card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <div style="font-weight: 600; color: #333;">IndiGo • 6E-345</div>
+                                <div style="font-size: 20px; font-weight: bold; color: #f93f00;">₹4,250</div>
+                            </div>
+                            <div style="color: #666; font-size: 14px;">DEL 06:00 → BOM 08:30 (2h 30m) Non-stop</div>
+                            <div style="font-size: 12px; color: #888; margin-top: 8px;">Aircraft: Not specified</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="background: #d1ecf1; color: #0c5460; padding: 10px 15px; border-radius: 8px;">✅ With Extension</h4>
+                        <div class="flight-card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <div style="font-weight: 600; color: #333;">
+                                    IndiGo • 6E-345
+                                    <span class="aircraft-manufacturer-tag airbus" style="border-style: dashed;">Airbus*</span>
+                                </div>
+                                <div style="font-size: 20px; font-weight: bold; color: #f93f00;">₹4,250</div>
+                            </div>
+                            <div style="color: #666; font-size: 14px;">DEL 06:00 → BOM 08:30 (2h 30m) Non-stop</div>
+                            <div style="font-size: 12px; color: #888; margin-top: 8px;">Aircraft: Not specified</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 20px;">Akasa Air Example</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="background: #fff3cd; color: #856404; padding: 10px 15px; border-radius: 8px;">❌ Before Extension</h4>
+                        <div class="flight-card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <div style="font-weight: 600; color: #333;">Akasa Air • QP-1401</div>
+                                <div style="font-size: 20px; font-weight: bold; color: #ff6b35;">₹3,890</div>
+                            </div>
+                            <div style="color: #666; font-size: 14px;">BLR 07:30 → HYD 08:45 (1h 15m) Non-stop</div>
+                            <div style="font-size: 12px; color: #888; margin-top: 8px;">Aircraft: Not shown</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="background: #d1ecf1; color: #0c5460; padding: 10px 15px; border-radius: 8px;">✅ With Extension</h4>
+                        <div class="flight-card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <div style="font-weight: 600; color: #333;">
+                                    Akasa Air • QP-1401
+                                    <span class="aircraft-manufacturer-tag boeing" style="border-style: dashed;">Boeing*</span>
+                                </div>
+                                <div style="font-size: 20px; font-weight: bold; color: #ff6b35;">₹3,890</div>
+                            </div>
+                            <div style="color: #666; font-size: 14px;">BLR 07:30 → HYD 08:45 (1h 15m) Non-stop</div>
+                            <div style="font-size: 12px; color: #888; margin-top: 8px;">Aircraft: Not shown</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Detection Section -->
+        <div id="enhanced" class="demo-section">
+            <div class="section-header">
+                <h2>🚀 Enhanced Aircraft Detection</h2>
+                <p>Shows specific aircraft models instead of just Boeing/Airbus</p>
+            </div>
+            
+            <div class="demo-note">
+                <strong>Enhancement:</strong> Extension now shows specific aircraft models (e.g., "Boeing 737 MAX", "Airbus A350") when available, with fallback to manufacturer (*) for airline-based detection.
+            </div>
+
+            <div style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">Specific Aircraft Models</h3>
+                
+                <div class="flight-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-weight: bold;">United Airlines • UA 1234</div>
+                        <div style="font-weight: bold; color: #2e7d32;">$356</div>
+                    </div>
+                    <div style="color: #666; margin-bottom: 10px;">2h 45m • Nonstop</div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px; color: #666;">
+                        Aircraft: Boeing 737 MAX 8
+                    </div>
+                </div>
+
+                <div class="flight-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-weight: bold;">Lufthansa • LH 456</div>
+                        <div style="font-weight: bold; color: #2e7d32;">$1,234</div>
+                    </div>
+                    <div style="color: #666; margin-bottom: 10px;">11h 30m • Nonstop</div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px; color: #666;">
+                        Equipment: Airbus A350-900
+                    </div>
+                </div>
+
+                <div class="flight-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-weight: bold;">Emirates • EK 789</div>
+                        <div style="font-weight: bold; color: #2e7d32;">$2,156</div>
+                    </div>
+                    <div style="color: #666; margin-bottom: 10px;">14h 15m • Nonstop</div>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px; color: #666;">
+                        Aircraft Type: Airbus A380
+                    </div>
+                </div>
+
+                <div class="enhancement-highlight">
+                    <h3>🔍 Key Enhancements</h3>
+                    <ul>
+                        <li><strong>Specific Models:</strong> Boeing 737, 737 MAX, 747, 757, 767, 777, 787 Dreamliner</li>
+                        <li><strong>Airbus Variants:</strong> A318, A319, A320, A321, A330, A340, A350, A380</li>
+                        <li><strong>Smart Detection:</strong> Works with various text formats ("Aircraft:", "Equipment:", "Plane:")</li>
+                        <li><strong>Airline-Based Fallback:</strong> Shows manufacturer (*) when aircraft info unavailable</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.demo-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update tab states
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        console.log('Aircraft Identifier Complete Demo Loaded');
+        console.log('Install the Chrome extension and refresh to see the tags in action!');
+    </script>
+</body>
+</html> 

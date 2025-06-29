@@ -1,0 +1,39 @@
+Chrome Extension Icon Specifications
+=====================================
+
+Icon Sizes Required:
+- icon16.png (16x16 pixels)
+- icon48.png (48x48 pixels) 
+- icon128.png (128x128 pixels)
+
+Design Concept:
+- Base: Airplane silhouette (commercial jet)
+- Colors: Blue and orange split design representing Boeing and Airbus
+- Style: Modern, clean, recognizable at small sizes
+- Background: Transparent or white
+
+Icon16.png (16x16):
+- Simple airplane icon
+- Blue (#0066CC) and orange (#FF6B35) split vertically
+- Minimal details due to small size
+
+Icon48.png (48x48):
+- Detailed airplane silhouette
+- Blue left wing (Boeing), orange right wing (Airbus)
+- Small "BA" text overlay (Boeing/Airbus initials)
+- Clean background
+
+Icon128.png (128x128):
+- High-detail airplane illustration
+- Boeing blue and Airbus orange color scheme
+- Possibly include small "Flight Aircraft Identifier" text
+- Professional, recognizable design
+
+Alternative Text-Based Icons:
+If using text-based icons:
+- "BA" in blue and orange
+- "✈️" airplane emoji with colored background
+- "B|A" with blue B and orange A
+
+Note: Actual PNG files should be created using a graphics editor
+following these specifications for production use. 
