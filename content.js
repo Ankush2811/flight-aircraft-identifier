@@ -4,9 +4,11 @@
 
   // Configuration
   const CONFIG = {
-    scanInterval: 2000, // Scan every 2 seconds for new content
+    scanInterval: 5000, // Reduced frequency: scan every 5 seconds instead of 2
     processedClass: 'aircraft-identified',
-    tagClass: 'aircraft-manufacturer-tag'
+    tagClass: 'aircraft-manufacturer-tag',
+    maxScanDepth: 10, // Limit how deep we scan
+    debounceDelay: 1000 // Debounce mutations for 1 second
   };
 
   // Common selectors for flight information across different booking sites
@@ -151,6 +153,9 @@
     
     tag.className = `aircraft-manufacturer-tag ${manufacturer.toLowerCase()} ${confidence}`;
     
+    // Mark as extension-created to avoid infinite loops
+    tag.setAttribute('data-extension-created', 'true');
+    
     // Different display logic based on confidence
     if (confidence === 'airline-based') {
       // For airline-based detection, just show manufacturer name
@@ -178,6 +183,31 @@
     }
     
     return tag;
+  }
+
+  // Check if element should be ignored
+  function shouldIgnoreElement(element) {
+    // Skip extension-created elements
+    if (element.hasAttribute && element.hasAttribute('data-extension-created')) {
+      return true;
+    }
+    
+    // Skip already processed elements
+    if (element.classList && element.classList.contains(CONFIG.processedClass)) {
+      return true;
+    }
+    
+    // Skip elements that are part of extension tags
+    if (element.closest && element.closest('.aircraft-manufacturer-tag')) {
+      return true;
+    }
+    
+    // Skip script and style elements
+    if (element.tagName && ['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(element.tagName)) {
+      return true;
+    }
+    
+    return false;
   }
 
   // Search for aircraft information in text content
@@ -242,63 +272,71 @@
 
   // Process a single element for aircraft information
   function processElement(element) {
-    if (element.classList.contains(CONFIG.processedClass)) return;
+    if (shouldIgnoreElement(element)) return;
     
-    const textContent = element.textContent || element.innerText || '';
-    
-    // Extract airline context for enhanced identification
-    const airlineInfo = extractAirlineInfo(element);
-    const context = airlineInfo ? { airline: airlineInfo } : {};
-    
-    const aircraft = findAircraftInText(textContent, context);
-    
-    if (aircraft) {
-      element.classList.add(CONFIG.processedClass);
+    try {
+      const textContent = element.textContent || element.innerText || '';
       
-      // Create and insert the tag with detailed aircraft information
-      const tag = createManufacturerTag(aircraft);
+      // Extract airline context for enhanced identification
+      const airlineInfo = extractAirlineInfo(element);
+      const context = airlineInfo ? { airline: airlineInfo } : {};
       
-      // Find the best place to insert the tag
-      let insertLocation = element;
+      const aircraft = findAircraftInText(textContent, context);
       
-      // For airline-based identification, try to place near airline info
-      if (aircraft.confidence === 'airline-based') {
-        const airlineElements = element.querySelectorAll('*');
-        for (const airlineEl of airlineElements) {
-          if (airlineEl.textContent && extractAirlineInfo(airlineEl)) {
-            insertLocation = airlineEl;
-            break;
+      if (aircraft) {
+        element.classList.add(CONFIG.processedClass);
+        
+        // Create and insert the tag with detailed aircraft information
+        const tag = createManufacturerTag(aircraft);
+        
+        // Find the best place to insert the tag
+        let insertLocation = element;
+        
+        // For airline-based identification, try to place near airline info
+        if (aircraft.confidence === 'airline-based') {
+          const airlineElements = element.querySelectorAll('*');
+          for (const airlineEl of airlineElements) {
+            if (airlineEl.textContent && extractAirlineInfo(airlineEl)) {
+              insertLocation = airlineEl;
+              break;
+            }
+          }
+        } else {
+          // For direct identification, find aircraft-specific location
+          const possibleLocations = element.querySelectorAll('span, div, p');
+          for (const location of possibleLocations) {
+            const locationAircraft = findAircraftInText(location.textContent, context);
+            if (locationAircraft && locationAircraft.confidence === 'direct') {
+              insertLocation = location;
+              break;
+            }
           }
         }
-      } else {
-        // For direct identification, find aircraft-specific location
-        const possibleLocations = element.querySelectorAll('span, div, p');
-        for (const location of possibleLocations) {
-          const locationAircraft = findAircraftInText(location.textContent, context);
-          if (locationAircraft && locationAircraft.confidence === 'direct') {
-            insertLocation = location;
-            break;
+        
+        // Insert the tag safely
+        try {
+          if (insertLocation.children.length > 0) {
+            insertLocation.appendChild(tag);
+          } else {
+            insertLocation.parentNode.insertBefore(tag, insertLocation.nextSibling);
           }
+          
+          // Add highlight class for direct matches only
+          if (aircraft.confidence === 'direct') {
+            insertLocation.classList.add('aircraft-highlight');
+          }
+          
+          // Update statistics
+          updateStatistics(aircraft.manufacturer);
+          
+          const displayText = aircraft.fullName || `${aircraft.manufacturer} ${aircraft.model}`;
+          console.log(`Aircraft identified: ${displayText} (${aircraft.confidence})`);
+        } catch (insertError) {
+          console.warn('Failed to insert aircraft tag:', insertError);
         }
       }
-      
-      // Insert the tag
-      if (insertLocation.children.length > 0) {
-        insertLocation.appendChild(tag);
-      } else {
-        insertLocation.parentNode.insertBefore(tag, insertLocation.nextSibling);
-      }
-      
-      // Add highlight class for direct matches only
-      if (aircraft.confidence === 'direct') {
-        insertLocation.classList.add('aircraft-highlight');
-      }
-      
-      // Update statistics
-      updateStatistics(aircraft.manufacturer);
-      
-      const displayText = aircraft.fullName || `${aircraft.manufacturer} ${aircraft.model}`;
-      console.log(`Aircraft identified: ${displayText} (${aircraft.confidence})`);
+    } catch (error) {
+      console.warn('Error processing element:', error);
     }
   }
 
@@ -327,39 +365,80 @@
       
       chrome.storage.local.set({ aircraftStats: stats }, function() {
         // Notify popup to update statistics
-        chrome.runtime.sendMessage({ 
-          action: 'updateStats', 
-          stats: stats 
-        });
+        try {
+          chrome.runtime.sendMessage({ 
+            action: 'updateStats', 
+            stats: stats 
+          });
+        } catch (e) {
+          // Ignore message errors
+        }
       });
     });
   }
 
-  // Scan page for flight information
+  // Debounce helper
+  let debounceTimer;
+  function debounce(func, delay) {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(func, delay);
+  }
+
+  // Optimized page scanning
   function scanPage() {
-    // Process elements matching our selectors
+    if (!extensionEnabled) return;
+    
+    let scannedCount = 0;
+    const maxScans = 1000; // Prevent infinite scanning
+    
+    // Process elements matching our selectors (more targeted)
     FLIGHT_SELECTORS.forEach(selector => {
       try {
         const elements = document.querySelectorAll(selector);
-        elements.forEach(processElement);
+        for (const element of elements) {
+          if (scannedCount >= maxScans) break;
+          if (!shouldIgnoreElement(element)) {
+            processElement(element);
+            scannedCount++;
+          }
+        }
       } catch (e) {
         // Ignore selector errors for sites that don't support certain selectors
       }
     });
     
-    // Also scan common text patterns throughout the page
-    const allElements = document.querySelectorAll('*');
-    for (const element of allElements) {
-      if (element.children.length === 0 && element.textContent) {
-        const text = element.textContent.trim().toLowerCase();
-        if ((text.includes('boeing') || text.includes('airbus') || 
-             text.match(/\bb?\d{3}\b/) || text.includes('aircraft') || 
-             text.includes('equipment') || text.includes('plane')) && 
-            text.length < 200) {
-          processElement(element);
+    // Limited scan for aircraft-related text (much more targeted)
+    const textSelectors = [
+      'div[class*="flight"]',
+      'div[class*="segment"]', 
+      'span:contains("Boeing")',
+      'span:contains("Airbus")',
+      'div:contains("Aircraft")',
+      'div:contains("Equipment")'
+    ];
+    
+    textSelectors.forEach(selector => {
+      try {
+        const elements = document.querySelectorAll(selector.replace(':contains', ''));
+        for (const element of elements) {
+          if (scannedCount >= maxScans) break;
+          if (element.children.length === 0 && element.textContent) {
+            const text = element.textContent.trim().toLowerCase();
+            if ((text.includes('boeing') || text.includes('airbus') || 
+                 text.match(/\bb?\d{3}\b/) || text.includes('aircraft') || 
+                 text.includes('equipment') || text.includes('plane')) && 
+                text.length < 200 && !shouldIgnoreElement(element)) {
+              processElement(element);
+              scannedCount++;
+            }
+          }
         }
+      } catch (e) {
+        // Ignore errors
       }
-    }
+    });
+    
+    console.log(`Aircraft scanner: processed ${scannedCount} elements`);
   }
 
   // Extension state
@@ -369,7 +448,7 @@
 
   // Initialize the extension
   function init() {
-    console.log('Know Your Plane: Initializing...');
+    console.log('Aircraft Identifier: Initializing...');
     
     // Check if extension is enabled
     chrome.storage.sync.get(['extensionEnabled'], function(result) {
@@ -395,35 +474,50 @@
       }
     });
     
-    console.log('Know Your Plane: Ready!');
+    console.log('Aircraft Identifier: Ready!');
   }
 
   // Start extension functionality
   function startExtension() {
     injectStyles();
     
-    // Initial scan
-    scanPage();
+    // Initial scan with delay to let page load
+    setTimeout(scanPage, 2000);
     
-    // Set up periodic scanning for dynamic content
+    // Set up periodic scanning for dynamic content (less frequent)
     if (scanningInterval) clearInterval(scanningInterval);
     scanningInterval = setInterval(() => {
-      if (extensionEnabled) scanPage();
+      if (extensionEnabled) {
+        debounce(scanPage, 500);
+      }
     }, CONFIG.scanInterval);
     
-    // Watch for DOM changes
+    // Watch for DOM changes (more selective)
     if (domObserver) domObserver.disconnect();
     domObserver = new MutationObserver((mutations) => {
       if (!extensionEnabled) return;
       
       let shouldScan = false;
-      mutations.forEach((mutation) => {
+      for (const mutation of mutations) {
+        // Only scan if new nodes contain potential flight info
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-          shouldScan = true;
+          for (const node of mutation.addedNodes) {
+            if (node.nodeType === Node.ELEMENT_NODE && 
+                !shouldIgnoreElement(node) &&
+                (node.textContent.includes('boeing') || 
+                 node.textContent.includes('airbus') ||
+                 node.textContent.includes('aircraft') ||
+                 node.textContent.includes('flight'))) {
+              shouldScan = true;
+              break;
+            }
+          }
         }
-      });
+        if (shouldScan) break;
+      }
+      
       if (shouldScan) {
-        setTimeout(scanPage, 500); // Debounce
+        debounce(scanPage, CONFIG.debounceDelay);
       }
     });
     
@@ -454,7 +548,7 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    init();
+    setTimeout(init, 1000); // Small delay to let page settle
   }
 
 })(); 
